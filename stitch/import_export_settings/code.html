@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Syntactic Architect - Settings &amp; Data</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-tint": "#a7c8ff",
+                        "background": "#0b1326",
+                        "on-error": "#690005",
+                        "secondary-container": "#3a4a5f",
+                        "on-secondary-container": "#a9bad3",
+                        "surface-bright": "#31394d",
+                        "on-tertiary-fixed": "#351000",
+                        "secondary": "#b7c8e1",
+                        "surface-container-low": "#131b2e",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "inverse-surface": "#dae2fd",
+                        "surface-container": "#171f33",
+                        "primary": "#a7c8ff",
+                        "inverse-primary": "#005eb2",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#d5e3ff",
+                        "surface-container-high": "#222a3d",
+                        "surface-container-lowest": "#060e20",
+                        "on-secondary": "#213145",
+                        "surface": "#0b1326",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-container-highest": "#2d3449",
+                        "tertiary-container": "#ef6719",
+                        "surface-variant": "#2d3449",
+                        "error": "#ffb4ab",
+                        "on-primary-container": "#002a55",
+                        "on-tertiary-container": "#4c1a00",
+                        "on-primary": "#003061",
+                        "outline-variant": "#414754",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-surface": "#dae2fd",
+                        "inverse-on-surface": "#283044",
+                        "outline": "#8b90a0",
+                        "on-surface-variant": "#c1c6d7",
+                        "on-tertiary": "#571e00",
+                        "primary-container": "#3291ff",
+                        "on-primary-fixed": "#001b3c",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#a7c8ff",
+                        "on-primary-fixed-variant": "#004788",
+                        "on-background": "#dae2fd",
+                        "tertiary": "#ffb695",
+                        "surface-dim": "#0b1326",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-secondary-fixed": "#0b1c30"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #0b1326;
+            color: #dae2fd;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #060e20;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d3449;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary/30">
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar Component -->
+<aside class="bg-slate-900 dark:bg-[#131b2e] h-screen w-64 flex-shrink-0 flex flex-col border-r border-transparent font-['Space_Grotesk'] tracking-tight">
+<div class="p-6">
+<div class="text-xl font-bold tracking-tighter text-slate-100 dark:text-[#a7c8ff]">Syntactic Architect</div>
+<div class="text-[10px] text-slate-500 font-mono mt-1 opacity-60">v2.4.0-stable</div>
+</div>
+<nav class="flex-1 px-4 space-y-1 overflow-y-auto">
+<div class="flex items-center px-3 py-2 rounded-sm text-slate-400 hover:text-slate-100 hover:bg-[#171f33] transition-colors duration-200 scale-95 active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</div>
+<div class="flex items-center px-3 py-2 rounded-sm text-slate-400 hover:text-slate-100 hover:bg-[#171f33] transition-colors duration-200 scale-95 active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined mr-3" data-icon="terminal">terminal</span>
+<span class="text-sm">Prompt Library</span>
+</div>
+<div class="flex items-center px-3 py-2 rounded-sm text-slate-400 hover:text-slate-100 hover:bg-[#171f33] transition-colors duration-200 scale-95 active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined mr-3" data-icon="model_training">model_training</span>
+<span class="text-sm">Model Playgrounds</span>
+</div>
+<div class="flex items-center px-3 py-2 rounded-sm text-slate-400 hover:text-slate-100 hover:bg-[#171f33] transition-colors duration-200 scale-95 active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined mr-3" data-icon="science">science</span>
+<span class="text-sm">Experiments</span>
+</div>
+<div class="flex items-center px-3 py-2 rounded-sm text-slate-400 hover:text-slate-100 hover:bg-[#171f33] transition-colors duration-200 scale-95 active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined mr-3" data-icon="database">database</span>
+<span class="text-sm">Datasets</span>
+</div>
+<div class="flex items-center px-3 py-2 rounded-sm text-slate-400 hover:text-slate-100 hover:bg-[#171f33] transition-colors duration-200 scale-95 active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined mr-3" data-icon="analytics">analytics</span>
+<span class="text-sm">Analytics</span>
+</div>
+</nav>
+<div class="px-4 py-4 mt-auto space-y-4">
+<button class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary-container text-sm font-bold py-2 rounded-sm transition-transform active:scale-95">
+                    New Prompt
+                </button>
+<div class="pt-4 border-t border-outline-variant/15 space-y-1">
+<div class="flex items-center px-3 py-2 rounded-sm text-slate-400 hover:text-slate-100 hover:bg-[#171f33] cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="star">star</span>
+<span class="text-xs">Favorites</span>
+</div>
+<div class="flex items-center px-3 py-2 rounded-sm text-slate-400 hover:text-slate-100 hover:bg-[#171f33] cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="history">history</span>
+<span class="text-xs">Recent</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col relative overflow-hidden bg-surface">
+<!-- TopNavBar Component -->
+<header class="flex items-center justify-between px-6 w-full sticky top-0 z-50 bg-slate-950/80 dark:bg-[#0b1326]/80 backdrop-blur-xl h-14 font-['Inter'] text-sm font-medium">
+<div class="flex items-center space-x-6">
+<div class="flex items-center bg-surface-container-lowest px-3 py-1.5 rounded-sm focus-within:ring-1 focus-within:ring-[#3291ff]/40">
+<span class="material-symbols-outlined text-outline mr-2 text-lg" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-xs w-48 text-on-surface" placeholder="Search prompts..." type="text"/>
+</div>
+<nav class="hidden md:flex items-center space-x-4">
+<a class="text-slate-400 hover:text-white transition-opacity" href="#">Docs</a>
+<a class="text-slate-400 hover:text-white transition-opacity" href="#">API</a>
+<a class="text-slate-400 hover:text-white transition-opacity" href="#">Community</a>
+</nav>
+</div>
+<div class="flex items-center space-x-4">
+<div class="flex items-center space-x-2 mr-4">
+<span class="material-symbols-outlined text-slate-400 hover:text-white cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-[#a7c8ff] border-b-2 border-[#3291ff] cursor-pointer" data-icon="settings">settings</span>
+<span class="material-symbols-outlined text-slate-400 hover:text-white cursor-pointer" data-icon="help_outline">help_outline</span>
+</div>
+<button class="px-3 py-1 text-xs font-semibold text-primary border border-outline-variant/30 rounded-sm hover:bg-primary/5 transition-colors">Upgrade</button>
+<button class="px-4 py-1.5 text-xs font-bold bg-primary text-on-primary-container rounded-sm hover:opacity-90 transition-opacity">Deploy</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant/20 overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5-g5h3SiTDUSazOJT41rRlL3OnOqNHIn7yuj_pZ7kKcH92YkFqofK2gwpIIrc-3sx85dP7CEoBvNZXdp_yBKwWKzo2lINy_KQuEwBPOegAuy1gJpkOxsVcQIYChrO2ol-VYV3yKyi25H5PLNEuxxEkKd_5xI7m1xJjU1CXwyIl3VU-BP0C2UVY0Y1S-WyyuHXHCy9tAQc6pNdVav0iwfXU9ZxZyhsQ5GyzwM7BBIgbNaxGRUaQR76zPtLIJMdYGWFl-G-LrG0aQV0"/>
+</div>
+</div>
+</header>
+<!-- Settings Canvas -->
+<div class="flex-1 overflow-y-auto p-8 max-w-6xl mx-auto w-full">
+<div class="mb-10">
+<h1 class="font-headline text-3xl font-bold tracking-tight text-on-surface mb-2">Configuration &amp; Data</h1>
+<p class="text-on-surface-variant text-sm max-w-2xl">Manage your architectural environment, sync local prompt libraries, and configure global inference parameters.</p>
+</div>
+<!-- Asymmetric Bento Layout -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Global Preferences Section (Left Column) -->
+<div class="col-span-12 lg:col-span-5 space-y-6">
+<section class="bg-surface-container-low p-6 rounded-sm border border-transparent">
+<h2 class="font-headline text-lg font-semibold text-primary mb-6 flex items-center">
+<span class="material-symbols-outlined mr-2 text-sm" data-icon="tune">tune</span>
+                                Global Preferences
+                            </h2>
+<div class="space-y-6">
+<!-- Theme Selection -->
+<div>
+<label class="block text-xs font-bold uppercase tracking-widest text-outline mb-3">Interface Theme</label>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center p-3 rounded-sm bg-surface-container-highest border border-primary/40 text-primary">
+<span class="material-symbols-outlined mr-2" data-icon="dark_mode">dark_mode</span>
+<span class="text-xs font-medium">Developer Dark</span>
+</button>
+<button class="flex items-center justify-center p-3 rounded-sm bg-surface-container-lowest border border-outline-variant/15 text-on-surface-variant hover:bg-surface-container">
+<span class="material-symbols-outlined mr-2" data-icon="light_mode">light_mode</span>
+<span class="text-xs font-medium">System Light</span>
+</button>
+</div>
+</div>
+<!-- Default Model -->
+<div>
+<label class="block text-xs font-bold uppercase tracking-widest text-outline mb-2">Default Inference Model</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant/15 text-on-surface text-sm p-2.5 focus:ring-1 focus:ring-primary/40 focus:outline-none rounded-sm">
+<option>GPT-4o (architect-stable)</option>
+<option>Claude 3.5 Sonnet</option>
+<option>Llama 3 70B (Local)</option>
+<option>Mistral Large 2</option>
+</select>
+<p class="mt-1.5 text-[10px] text-outline">Applied to all new prompt workspaces by default.</p>
+</div>
+<!-- Token Estimation -->
+<div>
+<label class="block text-xs font-bold uppercase tracking-widest text-outline mb-2">Token Estimation Engine</label>
+<div class="space-y-3">
+<label class="flex items-center cursor-pointer group">
+<input checked="" class="form-radio bg-surface-container-lowest border-outline-variant text-primary focus:ring-0 focus:ring-offset-0" name="token" type="radio"/>
+<div class="ml-3">
+<div class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Tiktoken (CL100K)</div>
+<div class="text-[10px] text-outline leading-tight">High precision for OpenAI-based models.</div>
+</div>
+</label>
+<label class="flex items-center cursor-pointer group">
+<input class="form-radio bg-surface-container-lowest border-outline-variant text-primary focus:ring-0 focus:ring-offset-0" name="token" type="radio"/>
+<div class="ml-3">
+<div class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Llama SentencePiece</div>
+<div class="text-[10px] text-outline leading-tight">Optimized for open-source weight architectures.</div>
+</div>
+</label>
+</div>
+</div>
+</div>
+</section>
+<!-- System Health / Footer Links -->
+<section class="bg-surface-container p-6 rounded-sm">
+<div class="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-outline">
+<span>Storage Quota</span>
+<span class="text-primary">14.2 / 50 GB</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-1 mt-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[28%]"></div>
+</div>
+</section>
+</div>
+<!-- Import/Export Section (Right Column) -->
+<div class="col-span-12 lg:col-span-7 space-y-6">
+<!-- Export Card -->
+<section class="bg-surface-container-low rounded-sm overflow-hidden">
+<div class="p-6">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-headline text-lg font-semibold text-primary flex items-center">
+<span class="material-symbols-outlined mr-2 text-sm" data-icon="upload_file">upload_file</span>
+                                        Export Library
+                                    </h2>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary-container px-4 py-1.5 text-xs font-bold rounded-sm shadow-lg shadow-primary/10">
+                                        Download .json
+                                    </button>
+</div>
+<div class="bg-surface-container-lowest rounded-sm border border-outline-variant/10 font-mono text-xs overflow-hidden">
+<div class="bg-surface-container px-4 py-2 border-b border-outline-variant/10 flex items-center justify-between">
+<span class="text-outline">library_backup_2023_10_24.json</span>
+<span class="text-[10px] bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-sm">PREVIEW</span>
+</div>
+<div class="p-4 h-48 overflow-y-auto text-on-surface-variant leading-relaxed">
+<pre><code>{
+  "version": "2.4.0",
+  "export_date": "2023-10-24T14:22:01Z",
+  "prompts": [
+    {
+      "id": "arch_0x821",
+      "name": "Refactor: React Performance",
+      "tags": ["frontend", "performance"],
+      "model": "gpt-4o",
+      "content": "Analyze the following component for..."
+    },
+    {
+      "id": "arch_0x992",
+      "name": "SQL Optimizer Pro",
+      "tags": ["backend", "sql"],
+      "model": "claude-3-sonnet",
+      "content": "Given a postgres schema, rewrite..."
+    }
+  ]
+}</code></pre>
+</div>
+</div>
+</div>
+</section>
+<!-- Import Card -->
+<section class="bg-surface-container-low p-6 rounded-sm">
+<h2 class="font-headline text-lg font-semibold text-tertiary-fixed-dim mb-6 flex items-center">
+<span class="material-symbols-outlined mr-2 text-sm" data-icon="download_file">file_download</span>
+                                Import Environment
+                            </h2>
+<!-- Dropzone -->
+<div class="border-2 border-dashed border-outline-variant/20 bg-surface-container-lowest/50 rounded-sm p-8 flex flex-col items-center justify-center text-center group hover:border-primary/40 transition-colors cursor-pointer mb-6">
+<span class="material-symbols-outlined text-outline text-4xl mb-3 group-hover:text-primary transition-colors" data-icon="cloud_upload">cloud_upload</span>
+<p class="text-sm font-medium text-on-surface">Drag and drop library file</p>
+<p class="text-[10px] text-outline mt-1 uppercase tracking-wider">Supports .json, .yaml, .txt</p>
+</div>
+<!-- Conflict Resolution -->
+<div class="bg-surface-container p-4 rounded-sm">
+<label class="block text-xs font-bold uppercase tracking-widest text-outline mb-4">Conflict Resolution Protocol</label>
+<div class="grid grid-cols-3 gap-3">
+<button class="flex flex-col items-center p-3 rounded-sm bg-surface-container-highest border border-primary/40 transition-all hover:translate-y-[-2px]">
+<span class="material-symbols-outlined text-primary mb-1" data-icon="call_merge">call_merge</span>
+<span class="text-[10px] font-bold text-on-surface">Merge</span>
+<span class="text-[8px] text-outline mt-0.5">Keep both entries</span>
+</button>
+<button class="flex flex-col items-center p-3 rounded-sm bg-surface-container-lowest border border-outline-variant/15 transition-all hover:translate-y-[-2px] hover:bg-surface-container-highest">
+<span class="material-symbols-outlined text-error mb-1" data-icon="find_replace">find_replace</span>
+<span class="text-[10px] font-bold text-on-surface">Overwrite</span>
+<span class="text-[8px] text-outline mt-0.5">Replace existing</span>
+</button>
+<button class="flex flex-col items-center p-3 rounded-sm bg-surface-container-lowest border border-outline-variant/15 transition-all hover:translate-y-[-2px] hover:bg-surface-container-highest">
+<span class="material-symbols-outlined text-secondary mb-1" data-icon="add_circle">add_circle</span>
+<span class="text-[10px] font-bold text-on-surface">Create New</span>
+<span class="text-[8px] text-outline mt-0.5">Force uniqueness</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+<!-- Footer Component -->
+<footer class="fixed bottom-0 w-full flex items-center justify-between px-4 z-40 bg-slate-950 dark:bg-[#060e20] h-8 border-t border-[#414754]/15 font-mono text-[10px] uppercase tracking-widest cursor-default">
+<div class="flex items-center space-x-6">
+<span class="text-blue-400 dark:text-[#a7c8ff]">Sync Status: Connected • Latency: 24ms</span>
+<div class="flex items-center space-x-4">
+<span class="text-slate-500 hover:text-slate-300">Token Usage: 14.2k</span>
+<span class="text-slate-500 hover:text-slate-300">Library v1.0.4</span>
+<span class="text-slate-500 hover:text-slate-300 flex items-center">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-1.5"></span>
+                            System Status
+                        </span>
+</div>
+</div>
+<div class="text-slate-500">
+                    © 2023 Syntactic Architect
+                </div>
+</footer>
+</main>
+</div>
+</body></html>

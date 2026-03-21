@@ -1,130 +1,383 @@
 <!doctype html>
-<html lang="en">
+<html class="dark" lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Prompt Vault</title>
+    <title>Prompt Vault — Syntactic Architect</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'background':                '#0b1326',
+              'surface':                   '#0b1326',
+              'surface-dim':               '#0b1326',
+              'surface-bright':            '#31394d',
+              'surface-container-lowest':  '#060e20',
+              'surface-container-low':     '#131b2e',
+              'surface-container':         '#171f33',
+              'surface-container-high':    '#222a3d',
+              'surface-container-highest': '#2d3449',
+              'surface-variant':           '#2d3449',
+              'on-surface':                '#dae2fd',
+              'on-surface-variant':        '#c1c6d7',
+              'on-background':             '#dae2fd',
+              'primary':                   '#a7c8ff',
+              'primary-container':         '#3291ff',
+              'primary-fixed':             '#d5e3ff',
+              'primary-fixed-dim':         '#a7c8ff',
+              'on-primary':                '#003061',
+              'on-primary-container':      '#002a55',
+              'on-primary-fixed':          '#001b3c',
+              'on-primary-fixed-variant':  '#004788',
+              'inverse-primary':           '#005eb2',
+              'secondary':                 '#b7c8e1',
+              'secondary-container':       '#3a4a5f',
+              'secondary-fixed':           '#d3e4fe',
+              'secondary-fixed-dim':       '#b7c8e1',
+              'on-secondary':              '#213145',
+              'on-secondary-container':    '#a9bad3',
+              'on-secondary-fixed':        '#0b1c30',
+              'on-secondary-fixed-variant':'#38485d',
+              'tertiary':                  '#ffb695',
+              'tertiary-container':        '#ef6719',
+              'tertiary-fixed':            '#ffdbcc',
+              'tertiary-fixed-dim':        '#ffb695',
+              'on-tertiary':               '#571e00',
+              'on-tertiary-container':     '#4c1a00',
+              'on-tertiary-fixed':         '#351000',
+              'on-tertiary-fixed-variant': '#7c2e00',
+              'error':                     '#ffb4ab',
+              'error-container':           '#93000a',
+              'on-error':                  '#690005',
+              'on-error-container':        '#ffdad6',
+              'outline':                   '#8b90a0',
+              'outline-variant':           '#414754',
+              'inverse-surface':           '#dae2fd',
+              'inverse-on-surface':        '#283044',
+              'surface-tint':              '#a7c8ff',
+            },
+            fontFamily: {
+              headline: ['Space Grotesk', 'sans-serif'],
+              body:     ['Inter', 'sans-serif'],
+              label:    ['Inter', 'sans-serif'],
+              mono:     ['JetBrains Mono', 'monospace'],
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              sm:      '0.125rem',
+              md:      '0.125rem',
+              lg:      '0.25rem',
+              xl:      '0.5rem',
+              full:    '0.75rem',
+            },
+          },
+        },
+      };
+    </script>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <div class="container">
-      <header>
-        <div class="header-brand">
-          <div class="brand-icon" aria-hidden="true">⚡</div>
-          <div class="brand-text">
-            <h1>Prompt Vault</h1>
-            <p>Save and manage your AI prompts</p>
+
+  <body class="bg-surface text-on-surface font-body h-screen overflow-hidden flex selection:bg-primary/30">
+
+    <!-- ───────────────────────── SIDEBAR ───────────────────────── -->
+    <aside class="h-screen w-64 flex-shrink-0 bg-surface-container-low flex flex-col">
+      <!-- Logo -->
+      <div class="p-6 pb-4">
+        <div class="flex items-center gap-3 mb-8">
+          <div class="w-8 h-8 rounded primary-gradient flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-on-primary-container" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 600">terminal</span>
+          </div>
+          <div>
+            <h1 class="text-base font-bold tracking-tighter text-primary font-headline leading-tight">Prompt Vault</h1>
+            <p class="text-[10px] text-outline uppercase tracking-widest leading-tight">Syntactic Architect</p>
           </div>
         </div>
-        <div class="header-controls">
-          <button onclick="loadDemoData()" class="btn btn-ghost">
-            <span aria-hidden="true">✦</span> Demo
+
+        <!-- New Prompt CTA -->
+        <button id="openFormBtn" class="w-full py-2.5 px-4 mb-6 primary-gradient text-on-primary-container font-semibold rounded text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+          <span class="material-symbols-outlined text-base leading-none">add</span>
+          New Prompt
+        </button>
+
+        <!-- Nav -->
+        <nav class="space-y-0.5">
+          <div class="flex items-center gap-3 px-3 py-2 rounded bg-surface-container-high text-primary font-semibold text-sm cursor-default">
+            <span class="material-symbols-outlined text-base">terminal</span>
+            Prompt Library
+          </div>
+          <div class="flex items-center gap-3 px-3 py-2 rounded text-outline hover:text-on-surface hover:bg-surface-container transition-colors text-sm cursor-default">
+            <span class="material-symbols-outlined text-base">model_training</span>
+            Model Playgrounds
+          </div>
+          <div class="flex items-center gap-3 px-3 py-2 rounded text-outline hover:text-on-surface hover:bg-surface-container transition-colors text-sm cursor-default">
+            <span class="material-symbols-outlined text-base">science</span>
+            Experiments
+          </div>
+          <div class="flex items-center gap-3 px-3 py-2 rounded text-outline hover:text-on-surface hover:bg-surface-container transition-colors text-sm cursor-default">
+            <span class="material-symbols-outlined text-base">analytics</span>
+            Analytics
+          </div>
+        </nav>
+      </div>
+
+      <!-- Collections -->
+      <div class="mt-auto p-6 pt-4 border-t border-outline-variant/15">
+        <p class="text-[10px] text-outline uppercase tracking-[0.2em] mb-2 px-3">Collections</p>
+        <div class="space-y-0.5">
+          <div class="flex items-center gap-3 px-3 py-1.5 text-sm text-outline hover:text-on-surface hover:bg-surface-container transition-colors rounded cursor-default">
+            <span class="material-symbols-outlined text-base">star</span>
+            Favorites
+          </div>
+          <div class="flex items-center gap-3 px-3 py-1.5 text-sm text-outline hover:text-on-surface hover:bg-surface-container transition-colors rounded cursor-default">
+            <span class="material-symbols-outlined text-base">history</span>
+            Recent
+          </div>
+          <div class="flex items-center gap-3 px-3 py-1.5 text-sm text-outline hover:text-on-surface hover:bg-surface-container transition-colors rounded cursor-default">
+            <span class="material-symbols-outlined text-base">label</span>
+            Model Tags
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ────────────────────────── MAIN ─────────────────────────── -->
+    <main class="flex-1 flex flex-col min-w-0 bg-surface overflow-hidden">
+
+      <!-- Top Nav -->
+      <header class="h-14 flex items-center justify-between px-6 bg-surface/80 backdrop-blur-xl sticky top-0 z-40 border-b border-outline-variant/10">
+        <div class="flex items-center gap-4 flex-1">
+          <!-- Search -->
+          <div class="relative w-full max-w-sm group">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg pointer-events-none">search</span>
+            <input
+              id="searchInput"
+              type="search"
+              placeholder="Search prompts, models…"
+              aria-label="Search prompts"
+              class="w-full bg-surface-container-lowest border-none rounded py-1.5 pl-10 pr-4 text-sm text-on-surface placeholder:text-outline focus:ring-1 focus:ring-primary-container/50 focus:outline-none transition-all"
+            />
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2 ml-4">
+          <button onclick="loadDemoData()" class="nav-btn">
+            <span class="material-symbols-outlined text-base">auto_awesome</span>
+            Demo
           </button>
-          <button id="exportBtn" class="btn btn-ghost">
-            <span aria-hidden="true">↑</span> Export
+          <button id="exportBtn" class="nav-btn">
+            <span class="material-symbols-outlined text-base">upload_file</span>
+            Export
           </button>
-          <button id="importBtn" class="btn btn-ghost">
-            <span aria-hidden="true">↓</span> Import
+          <button id="importBtn" class="nav-btn">
+            <span class="material-symbols-outlined text-base">file_download</span>
+            Import
           </button>
-          <input
-            id="importFile"
-            type="file"
-            accept="application/json"
-            style="display: none"
-          />
+          <input id="importFile" type="file" accept="application/json" class="hidden" />
         </div>
       </header>
 
-      <main>
-        <aside class="form-section">
-          <h2>New Prompt</h2>
-          <form id="promptForm">
-            <div class="form-group">
-              <label for="promptTitle">Title</label>
-              <input
-                type="text"
-                id="promptTitle"
-                placeholder="Enter a descriptive title..."
-                required
-              />
+      <!-- Content Canvas -->
+      <div class="flex-1 overflow-y-auto p-8 pb-16 custom-scrollbar">
+
+        <!-- Page Header + Stats -->
+        <div class="grid grid-cols-12 gap-8 mb-8 items-end">
+          <div class="col-span-12 lg:col-span-8">
+            <h2 class="font-headline text-4xl font-bold tracking-tight text-on-surface mb-2">Prompt Library</h2>
+            <p class="text-on-surface-variant max-w-xl text-sm">Manage and version your architectural prompt patterns. Optimize for latency, token density, and semantic accuracy.</p>
+          </div>
+          <div class="col-span-12 lg:col-span-4 flex gap-4">
+            <div class="bg-surface-container-low p-4 rounded flex-1">
+              <div class="text-[10px] text-outline uppercase tracking-widest mb-1">Active Prompts</div>
+              <div id="promptCount" class="text-2xl font-mono font-bold text-primary">0</div>
             </div>
-            <div class="form-group">
-              <label for="promptContent">Prompt Content</label>
-              <textarea
-                id="promptContent"
-                placeholder="Write your prompt here..."
-                rows="7"
-                required
-              ></textarea>
+            <div class="bg-surface-container-low p-4 rounded flex-1">
+              <div class="text-[10px] text-outline uppercase tracking-widest mb-1">Avg Rating</div>
+              <div id="avgRating" class="text-2xl font-mono font-bold text-tertiary">—</div>
             </div>
-            <div class="form-group">
-              <label for="modelName">Target Model</label>
-              <input
-                type="text"
-                id="modelName"
-                maxlength="100"
-                placeholder="e.g. gpt-4o, claude-sonnet-4-6"
-                required
-              />
-            </div>
-            <button type="submit" class="btn btn-primary">
-              <span aria-hidden="true">+</span> Save Prompt
+          </div>
+        </div>
+
+        <!-- Filters Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div class="flex items-center gap-2">
+            <button class="bg-surface-container-high text-on-surface px-4 py-1.5 rounded text-xs font-medium border-b-2 border-primary">
+              All Prompts
             </button>
-          </form>
-        </aside>
-
-        <section class="prompts-section">
-          <div class="prompts-section-header">
-            <h2>Saved Prompts <span id="promptCount" class="prompt-count-badge"></span></h2>
-            <div class="prompts-toolbar">
-              <div class="search-wrap">
-                <span class="search-icon" aria-hidden="true">🔍</span>
-                <input
-                  type="search"
-                  id="searchInput"
-                  placeholder="Search prompts..."
-                  aria-label="Search prompts"
-                />
-              </div>
-              <select id="sortSelect" aria-label="Sort prompts">
-                <option value="newest">Newest first</option>
-                <option value="oldest">Oldest first</option>
-                <option value="rating">Highest rated</option>
-                <option value="title">A → Z</option>
-              </select>
-            </div>
           </div>
-          <div id="promptsContainer" class="prompts-grid">
-            <div class="empty-state">
-              <div class="empty-icon" aria-hidden="true">📭</div>
-              <p class="empty-title">No prompts yet</p>
-              <p class="empty-sub">Create your first prompt using the form on the left.</p>
-            </div>
+          <div class="flex items-center gap-3">
+            <select id="sortSelect" aria-label="Sort prompts" class="bg-surface-container-low border-none text-xs rounded py-1.5 pl-3 pr-8 focus:ring-1 focus:ring-primary/40 focus:outline-none text-on-surface-variant appearance-none sort-select-arrow cursor-pointer">
+              <option value="newest">Sort: Last Updated</option>
+              <option value="oldest">Sort: Oldest first</option>
+              <option value="rating">Sort: Highest rated</option>
+              <option value="title">Sort: A → Z</option>
+            </select>
           </div>
-        </section>
-      </main>
-    </div>
+        </div>
 
-    <!-- Import conflict modal -->
-    <div id="conflictModal" class="modal" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-header">
-          <span class="modal-icon" aria-hidden="true">⚠️</span>
-          <h3>Import Conflict</h3>
+        <!-- Prompts Grid -->
+        <div id="promptsContainer" class="prompts-grid">
+          <div class="empty-state">
+            <div class="empty-icon" aria-hidden="true">📭</div>
+            <p class="empty-title">No prompts yet</p>
+            <p class="empty-sub">Click "New Prompt" in the sidebar to get started.</p>
+          </div>
         </div>
-        <p id="conflictMessage">
-          Duplicate prompt IDs found. Choose how to resolve conflicts.
-        </p>
-        <div class="modal-actions">
-          <button id="conflictMerge" class="btn btn-ghost">Merge</button>
-          <button id="conflictOverwrite" class="btn btn-ghost">Overwrite</button>
-          <button id="conflictCreateNew" class="btn btn-ghost">Create New IDs</button>
-          <button id="conflictCancel" class="btn btn-danger">Cancel</button>
+
+      </div>
+    </main>
+
+    <!-- ───────────── NEW PROMPT PANEL (slide-over) ──────────────── -->
+    <div id="formPanel" class="form-panel" aria-hidden="true">
+      <div class="form-panel-backdrop" id="formPanelBackdrop"></div>
+      <div class="form-panel-drawer">
+        <!-- Panel Header -->
+        <div class="flex items-center justify-between p-6 border-b border-outline-variant/15">
+          <div>
+            <h2 class="font-headline font-bold text-base text-on-surface tracking-tight">New Prompt</h2>
+            <p class="text-[10px] text-outline uppercase tracking-widest mt-0.5">Architect a new pattern</p>
+          </div>
+          <button id="closeFormBtn" class="p-1.5 text-outline hover:text-on-surface transition-colors rounded hover:bg-surface-container-high">
+            <span class="material-symbols-outlined">close</span>
+          </button>
         </div>
+
+        <!-- Form -->
+        <form id="promptForm" class="flex flex-col gap-5 p-6 flex-1 overflow-y-auto">
+
+          <div class="form-field">
+            <label for="promptTitle" class="field-label">Prompt Title</label>
+            <input type="text" id="promptTitle" placeholder="e.g. SQL Query Optimiser" required
+              class="field-input" />
+          </div>
+
+          <div class="form-field">
+            <label for="promptContent" class="field-label">Prompt Content</label>
+            <textarea id="promptContent" rows="9" required placeholder="Write your prompt here…"
+              class="field-input field-mono resize-y"></textarea>
+          </div>
+
+          <div class="form-field">
+            <label for="modelName" class="field-label">Target Model</label>
+            <input type="text" id="modelName" maxlength="100"
+              placeholder="e.g. gpt-4o, claude-sonnet-4-6" required
+              class="field-input" />
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" class="w-full py-2.5 primary-gradient text-on-primary-container font-bold text-sm rounded flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+              <span class="material-symbols-outlined text-base leading-none">save</span>
+              Save Prompt
+            </button>
+          </div>
+
+        </form>
       </div>
     </div>
 
+    <!-- ────────────── IMPORT CONFLICT MODAL ───────────────── -->
+    <div id="conflictModal" class="stitch-modal" aria-hidden="true">
+      <div class="stitch-modal-dialog glass-panel">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="material-symbols-outlined text-tertiary">warning</span>
+          <h3 class="font-headline font-bold text-base text-on-surface">Import Conflict</h3>
+        </div>
+        <p id="conflictMessage" class="text-sm text-on-surface-variant mb-6">
+          Duplicate prompt IDs found. Choose how to resolve conflicts.
+        </p>
+        <div class="grid grid-cols-3 gap-3 mb-4">
+          <button id="conflictMerge" class="conflict-btn conflict-btn-primary">
+            <span class="material-symbols-outlined text-primary mb-1">call_merge</span>
+            <span class="text-[10px] font-bold text-on-surface">Merge</span>
+            <span class="text-[8px] text-outline">Keep both</span>
+          </button>
+          <button id="conflictOverwrite" class="conflict-btn">
+            <span class="material-symbols-outlined text-error mb-1">find_replace</span>
+            <span class="text-[10px] font-bold text-on-surface">Overwrite</span>
+            <span class="text-[8px] text-outline">Replace existing</span>
+          </button>
+          <button id="conflictCreateNew" class="conflict-btn">
+            <span class="material-symbols-outlined text-secondary mb-1">add_circle</span>
+            <span class="text-[10px] font-bold text-on-surface">Create New</span>
+            <span class="text-[8px] text-outline">Force unique</span>
+          </button>
+        </div>
+        <button id="conflictCancel" class="w-full py-2 bg-surface-container text-error text-xs rounded hover:bg-error/10 transition-colors flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-sm">close</span>
+          Cancel Import
+        </button>
+      </div>
+    </div>
+
+    <!-- ─────────── TOAST MESSAGES ─────────── -->
     <div id="messageArea" class="message-area" aria-live="polite"></div>
+
+    <!-- ─────────── STATUS BAR ─────────── -->
+    <footer class="fixed bottom-0 left-0 right-0 h-7 z-50 bg-surface-container-lowest border-t border-outline-variant/15 flex items-center justify-between px-4 font-mono text-[10px] uppercase tracking-widest">
+      <div class="flex items-center gap-6 text-outline">
+        <span class="flex items-center gap-1.5 text-primary">
+          <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+          Ready
+        </span>
+        <span>Token Engine: Active</span>
+      </div>
+      <div class="flex items-center gap-4 text-outline">
+        <span>Library v1.0.0</span>
+        <span class="flex items-center gap-1 text-primary">
+          <span class="material-symbols-outlined" style="font-size:10px">check_circle</span>
+          Local Storage
+        </span>
+      </div>
+    </footer>
+
     <script src="script.js"></script>
+    <script>
+      // Panel open/close
+      const formPanel    = document.getElementById('formPanel');
+      const openFormBtn  = document.getElementById('openFormBtn');
+      const closeFormBtn = document.getElementById('closeFormBtn');
+      const backdrop     = document.getElementById('formPanelBackdrop');
+
+      function openPanel() {
+        formPanel.setAttribute('aria-hidden', 'false');
+        formPanel.classList.add('open');
+      }
+      function closePanel() {
+        formPanel.setAttribute('aria-hidden', 'true');
+        formPanel.classList.remove('open');
+      }
+      openFormBtn.addEventListener('click', openPanel);
+      closeFormBtn.addEventListener('click', closePanel);
+      backdrop.addEventListener('click', closePanel);
+
+      // Close panel after form submit (script.js fires submit event)
+      document.getElementById('promptForm').addEventListener('submit', () => {
+        setTimeout(closePanel, 300);
+      });
+
+      // Avg rating display
+      function updateAvgRating() {
+        const prompts = JSON.parse(localStorage.getItem('prompts') || '[]');
+        const rated = prompts.filter(p => p.rating > 0);
+        const el = document.getElementById('avgRating');
+        if (!el) return;
+        if (rated.length === 0) { el.textContent = '—'; return; }
+        const avg = rated.reduce((s, p) => s + p.rating, 0) / rated.length;
+        el.textContent = avg.toFixed(1);
+      }
+
+      // Re-compute after any render
+      const orig = window.renderPrompts;
+      if (typeof orig === 'function') {
+        const _orig = orig;
+        window.renderPrompts = function() { _orig.apply(this, arguments); updateAvgRating(); };
+      }
+      document.addEventListener('DOMContentLoaded', updateAvgRating);
+    </script>
   </body>
 </html>
