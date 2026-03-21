@@ -1,7 +1,18 @@
 // Initialize prompts on page load
 document.addEventListener('DOMContentLoaded', function () {
+  // Seed demo data on first visit
+  if (!localStorage.getItem('prompts')) {
+    localStorage.setItem('prompts', JSON.stringify(DEMO_PROMPTS));
+  }
+
   renderPrompts();
   document.getElementById('promptForm').addEventListener('submit', savePrompt);
+
+  // Search and sort controls
+  const searchInput = document.getElementById('searchInput');
+  const sortSelect = document.getElementById('sortSelect');
+  if (searchInput) searchInput.addEventListener('input', renderPrompts);
+  if (sortSelect) sortSelect.addEventListener('change', renderPrompts);
   // Listen for star rating clicks (event delegation)
   document
     .getElementById('promptsContainer')
@@ -65,6 +76,22 @@ document.addEventListener('DOMContentLoaded', function () {
         const noteId = deleteBtn.closest('.note-item').dataset.noteId;
         if (confirm('Delete this note?')) {
           deleteNote(promptId, noteId);
+        }
+        return;
+      }
+
+      const copyBtn = e.target.closest('.card-copy-btn');
+      if (copyBtn) {
+        const card = copyBtn.closest('.prompt-card');
+        const promptId = Number(card.dataset.id);
+        const prompts = JSON.parse(localStorage.getItem('prompts')) || [];
+        const p = prompts.find((x) => Number(x.id) === promptId);
+        if (p && navigator.clipboard) {
+          navigator.clipboard.writeText(p.content).then(() => {
+            const orig = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => { copyBtn.textContent = orig; }, 1500);
+          });
         }
         return;
       }
@@ -132,24 +159,57 @@ function savePrompt(e) {
 
 // Render all prompts from localStorage
 function renderPrompts() {
-  const prompts = JSON.parse(localStorage.getItem('prompts')) || [];
+  const allPrompts = JSON.parse(localStorage.getItem('prompts')) || [];
   const container = document.getElementById('promptsContainer');
+  const countBadge = document.getElementById('promptCount');
+
+  // Update count badge
+  if (countBadge) countBadge.textContent = allPrompts.length;
+
+  // Filter by search query
+  const query = (document.getElementById('searchInput') || {}).value || '';
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? allPrompts.filter(
+        (p) =>
+          (p.title || '').toLowerCase().includes(q) ||
+          (p.content || '').toLowerCase().includes(q) ||
+          (p.metadata && p.metadata.model || '').toLowerCase().includes(q),
+      )
+    : allPrompts;
+
+  // Sort
+  const sortVal = (document.getElementById('sortSelect') || {}).value || 'newest';
+  const sorted = filtered.slice().sort((a, b) => {
+    if (sortVal === 'oldest') return parsePromptCreatedAt(a) - parsePromptCreatedAt(b);
+    if (sortVal === 'rating') return (b.rating || 0) - (a.rating || 0);
+    if (sortVal === 'title') return (a.title || '').localeCompare(b.title || '');
+    // newest (default)
+    return parsePromptCreatedAt(b) - parsePromptCreatedAt(a);
+  });
 
   // Clear container
   container.innerHTML = '';
 
-  if (prompts.length === 0) {
-    container.innerHTML =
-      '<p class="empty-state">No prompts saved yet. Create your first prompt above!</p>';
+  if (allPrompts.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon" aria-hidden="true">📭</div>
+        <p class="empty-title">No prompts yet</p>
+        <p class="empty-sub">Create your first prompt using the form on the left.</p>
+      </div>`;
     return;
   }
 
-  // Sort prompts by createdAt descending (use metadata.createdAt when available)
-  const sorted = prompts.slice().sort((a, b) => {
-    const aDate = parsePromptCreatedAt(a);
-    const bDate = parsePromptCreatedAt(b);
-    return bDate - aDate;
-  });
+  if (sorted.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon" aria-hidden="true">🔍</div>
+        <p class="empty-title">No results</p>
+        <p class="empty-sub">No prompts match "<em>${escapeHtml(q)}</em>".</p>
+      </div>`;
+    return;
+  }
 
   // Create card for each prompt
   sorted.forEach((prompt) => {
@@ -182,24 +242,27 @@ function createPromptCard(prompt) {
     md && md.tokenEstimate ? renderTokenEstimateHtml(md.tokenEstimate) : '';
 
   card.innerHTML = `
-        <h3>${escapeHtml(prompt.title)}</h3>
-        <div class="meta-row">
-          <div class="meta-model">Model: <strong>${modelDisplay}</strong></div>
-          <div class="meta-times">Created: ${createdDisplay}${updatedDisplay ? ' • Updated: ' + updatedDisplay : ''}</div>
+        <div class="card-header">
+          <h3>${escapeHtml(prompt.title)}</h3>
+          <button class="card-copy-btn" title="Copy prompt content">Copy</button>
         </div>
-        <div class="stars" aria-hidden="false">
+        <div class="meta-row">
+          <span class="meta-model-tag">⚡ ${modelDisplay}</span>
+          <span class="meta-date">${createdDisplay}</span>
+        </div>
+        <div class="stars" aria-label="Rating">
           ${renderStars(prompt.rating)}
         </div>
-        <p class="prompt-preview">${escapeHtml(preview)}</p>
+        <pre class="prompt-preview">${escapeHtml(preview)}</pre>
         <div class="meta-tokens">${tokenHtml}</div>
         <div class="notes-container">
           <div class="notes-header">
-            <button class="btn add-note">Add note</button>
+            <button class="btn btn-ghost btn-sm add-note">+ Add note</button>
           </div>
           ${renderNotesHtml(prompt.notes)}
         </div>
         <div class="prompt-actions">
-            <button class="btn btn-delete" onclick="deletePrompt(${prompt.id})">Delete</button>
+            <button class="btn btn-danger btn-sm" onclick="deletePrompt(${prompt.id})">Delete</button>
         </div>
     `;
 
@@ -243,8 +306,8 @@ function renderNotesHtml(notes) {
           <div class="note-meta">${formatTimestamp(n.createdAt)}</div>
         </div>
         <div class="note-actions">
-          <button class="btn edit-note" aria-label="Edit note">Edit</button>
-          <button class="btn delete-note" aria-label="Delete note">Delete</button>
+          <button class="btn btn-ghost btn-sm edit-note" aria-label="Edit note">Edit</button>
+          <button class="btn btn-danger btn-sm delete-note" aria-label="Delete note">Del</button>
         </div>
       </li>`;
   }
@@ -266,8 +329,8 @@ function showNoteEditor(card, promptId, noteId = null, initialText = '') {
     <div class="note-editor-footer">
       <span class="note-counter">${max - String(initialText).length} chars left</span>
       <div class="editor-actions">
-        <button class="btn save-note" data-note-id="${noteId || ''}">Save</button>
-        <button class="btn cancel-note">Cancel</button>
+        <button class="btn btn-primary btn-sm save-note" data-note-id="${noteId || ''}">Save</button>
+        <button class="btn btn-ghost btn-sm cancel-note">Cancel</button>
       </div>
     </div>
   `;
@@ -834,3 +897,301 @@ function generateUniqueId(existingMap) {
   } while (existingMap.has(String(id)));
   return id;
 }
+
+// ─── Demo Data ───────────────────────────────────────────────────────────────
+
+function loadDemoData() {
+  if (!confirm('This will replace all current prompts with 20 demo prompts. Continue?')) return;
+  localStorage.setItem('prompts', JSON.stringify(DEMO_PROMPTS));
+  renderPrompts();
+  showMessage('20 demo prompts loaded.', 4000);
+}
+
+const DEMO_PROMPTS = [
+  {
+    id: 1700000001000,
+    title: 'Summarize Article into Bullet Points',
+    content: 'You are a skilled editor. Summarize the following article into exactly 5 concise bullet points. Each bullet should be one sentence, capturing a distinct key idea. Do not repeat information across bullets.\n\nArticle:\n{{article}}',
+    rating: 5,
+    notes: [
+      { id: 1700000001100, text: 'Works great for news articles and blog posts. Tends to miss nuance on academic papers.', createdAt: 1700000001100 }
+    ],
+    metadata: {
+      model: 'gpt-4o',
+      createdAt: '2025-11-14T09:00:00.000Z',
+      updatedAt: '2025-11-14T09:00:00.000Z',
+      tokenEstimate: { min: 62, max: 89, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000002000,
+    title: 'Code Review — Security Focus',
+    content: 'You are a senior application security engineer. Review the following code for security vulnerabilities only. For each issue found:\n1. Name the vulnerability (e.g., SQL Injection, XSS)\n2. Quote the specific line(s)\n3. Explain the risk\n4. Provide a corrected code snippet\n\nCode:\n```\n{{code}}\n```',
+    rating: 5,
+    notes: [
+      { id: 1700000002100, text: 'Very reliable for OWASP Top 10. Add "focus on authentication" for auth-heavy code.', createdAt: 1700000002100 },
+      { id: 1700000002200, text: 'Tested on Python Flask and Node.js Express — both excellent results.', createdAt: 1700000002200 }
+    ],
+    metadata: {
+      model: 'claude-sonnet-4-6',
+      createdAt: '2025-11-15T10:30:00.000Z',
+      updatedAt: '2025-11-15T11:00:00.000Z',
+      tokenEstimate: { min: 88, max: 124, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000003000,
+    title: 'Generate Unit Tests',
+    content: 'You are a test engineer. Write comprehensive unit tests for the function below using {{framework}} (e.g., Jest, pytest, JUnit). Cover:\n- Happy path\n- Edge cases (empty input, null, boundary values)\n- Error cases\n\nUse descriptive test names that explain what is being tested and why.\n\nFunction:\n```\n{{function_code}}\n```',
+    rating: 4,
+    notes: [],
+    metadata: {
+      model: 'gpt-4o-mini',
+      createdAt: '2025-11-16T08:00:00.000Z',
+      updatedAt: '2025-11-16T08:00:00.000Z',
+      tokenEstimate: { min: 74, max: 108, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000004000,
+    title: 'Explain Code to a Junior Developer',
+    content: 'You are a patient senior developer mentoring a junior engineer. Explain the following code step by step as if the reader is familiar with programming basics but new to this codebase.\n\n- Avoid jargon without defining it first\n- Use analogies where helpful\n- End with a one-sentence summary of what the code accomplishes\n\nCode:\n```\n{{code}}\n```',
+    rating: 4,
+    notes: [
+      { id: 1700000004100, text: 'Great for onboarding docs. Pair with "Explain Code to a Non-Technical Stakeholder" for full coverage.', createdAt: 1700000004100 }
+    ],
+    metadata: {
+      model: 'claude-sonnet-4-6',
+      createdAt: '2025-11-17T14:00:00.000Z',
+      updatedAt: '2025-11-17T14:00:00.000Z',
+      tokenEstimate: { min: 79, max: 113, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000005000,
+    title: 'Write a Product Requirements Document (PRD)',
+    content: 'You are a product manager. Write a concise PRD for the feature described below. Include these sections:\n\n## Problem Statement\n## Goals & Non-Goals\n## User Stories (at least 3, in "As a… I want… so that…" format)\n## Success Metrics\n## Open Questions\n\nFeature description:\n{{feature_description}}',
+    rating: 3,
+    notes: [],
+    metadata: {
+      model: 'gpt-4o',
+      createdAt: '2025-11-18T11:00:00.000Z',
+      updatedAt: '2025-11-18T11:00:00.000Z',
+      tokenEstimate: { min: 68, max: 100, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000006000,
+    title: 'Translate Error Message to Plain English',
+    content: 'You are a developer experience expert. Translate the following technical error message into plain English for a non-technical user. The explanation should:\n- Be 1-3 sentences\n- Avoid all technical terms\n- Suggest one actionable next step the user can take\n\nError:\n{{error_message}}',
+    rating: 5,
+    notes: [
+      { id: 1700000006100, text: 'Use this in support tooling. Users love it — CSAT improved ~12% after we integrated this.', createdAt: 1700000006100 }
+    ],
+    metadata: {
+      model: 'gpt-4o-mini',
+      createdAt: '2025-11-19T09:30:00.000Z',
+      updatedAt: '2025-11-19T09:30:00.000Z',
+      tokenEstimate: { min: 65, max: 95, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000007000,
+    title: 'Refactor Code for Readability',
+    content: 'You are a software craftsperson. Refactor the code below to improve readability and maintainability without changing its external behavior. Apply these principles:\n- Meaningful variable and function names\n- Single responsibility per function\n- Remove duplication (DRY)\n- Add brief comments only where the logic is non-obvious\n\nReturn only the refactored code, then a short "What changed" section.\n\nOriginal code:\n```\n{{code}}\n```',
+    rating: 4,
+    notes: [],
+    metadata: {
+      model: 'claude-sonnet-4-6',
+      createdAt: '2025-11-20T15:00:00.000Z',
+      updatedAt: '2025-11-20T15:00:00.000Z',
+      tokenEstimate: { min: 84, max: 121, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000008000,
+    title: 'Socratic Debate Partner',
+    content: 'You are a Socratic debate partner. I will state a position and you will challenge it with thoughtful, probing questions — not counter-arguments. Your goal is to help me stress-test my reasoning, expose hidden assumptions, and think more rigorously.\n\nAsk one question at a time. After I respond, ask the next question based on my answer.\n\nMy position: {{position}}',
+    rating: 4,
+    notes: [
+      { id: 1700000008100, text: 'Excellent for pre-mortem exercises before big decisions. Works best with Claude — GPT-4o tends to drift into giving answers instead of asking questions.', createdAt: 1700000008100 }
+    ],
+    metadata: {
+      model: 'claude-opus-4-6',
+      createdAt: '2025-11-21T10:00:00.000Z',
+      updatedAt: '2025-11-21T10:00:00.000Z',
+      tokenEstimate: { min: 77, max: 111, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000009000,
+    title: 'Convert JSON to TypeScript Interface',
+    content: 'Convert the following JSON object into a TypeScript interface. Rules:\n- Use PascalCase for the interface name (derive it from context if possible, or use "Root")\n- Mark fields as optional (?) if their value is null or if the field name suggests it might be absent\n- Use union types for fields that could be multiple types\n- Add a JSDoc comment to each field explaining its purpose\n\nJSON:\n```json\n{{json}}\n```',
+    rating: 5,
+    notes: [],
+    metadata: {
+      model: 'gpt-4o-mini',
+      createdAt: '2025-11-22T13:00:00.000Z',
+      updatedAt: '2025-11-22T13:00:00.000Z',
+      tokenEstimate: { min: 71, max: 104, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000010000,
+    title: 'Write a Cold Outreach Email',
+    content: 'You are an expert copywriter specialising in B2B outreach. Write a cold email for the following context. The email must:\n- Subject line: under 8 words, curiosity-driving, no clickbait\n- Opening: personalised reference to something specific about the recipient\n- Body: one clear value proposition (2-3 sentences max)\n- CTA: one specific, low-friction ask\n- Total length: under 150 words\n\nContext:\nSender: {{sender_info}}\nRecipient: {{recipient_info}}\nGoal: {{goal}}',
+    rating: 3,
+    notes: [
+      { id: 1700000010100, text: 'Results vary heavily based on how much detail you put in the context. Rich context = much better email.', createdAt: 1700000010100 }
+    ],
+    metadata: {
+      model: 'gpt-4o',
+      createdAt: '2025-11-23T08:00:00.000Z',
+      updatedAt: '2025-11-23T08:00:00.000Z',
+      tokenEstimate: { min: 95, max: 136, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000011000,
+    title: 'SQL Query Optimiser',
+    content: 'You are a database performance expert. Analyse the following SQL query and suggest optimisations. For each suggestion:\n1. Describe the issue (e.g., full table scan, N+1, missing index)\n2. Show the optimised query or schema change\n3. Estimate the performance impact (low / medium / high)\n\nDatabase engine: {{engine}} (e.g., PostgreSQL, MySQL)\nQuery:\n```sql\n{{query}}\n```\n\nSchema (if relevant):\n```sql\n{{schema}}\n```',
+    rating: 4,
+    notes: [],
+    metadata: {
+      model: 'gpt-4o',
+      createdAt: '2025-11-24T11:00:00.000Z',
+      updatedAt: '2025-11-24T11:00:00.000Z',
+      tokenEstimate: { min: 80, max: 116, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000012000,
+    title: 'Generate Commit Message from Diff',
+    content: 'You are a disciplined engineer. Write a git commit message for the following diff. Follow the Conventional Commits spec:\n- Format: <type>(<scope>): <subject>\n- Types: feat, fix, refactor, test, docs, chore, perf\n- Subject: imperative mood, ≤72 chars, no period at end\n- Body (optional): explain *why*, not *what*, wrap at 72 chars\n\nDiff:\n```diff\n{{diff}}\n```',
+    rating: 5,
+    notes: [
+      { id: 1700000012100, text: 'Add "Do not include co-author lines" if you want clean messages without AI attribution.', createdAt: 1700000012100 }
+    ],
+    metadata: {
+      model: 'gpt-4o-mini',
+      createdAt: '2025-11-25T14:00:00.000Z',
+      updatedAt: '2025-11-25T14:00:00.000Z',
+      tokenEstimate: { min: 76, max: 110, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000013000,
+    title: 'Design System Component Spec',
+    content: 'You are a design systems engineer. Write a component specification for the UI component described below. Include:\n\n## Component Name & Purpose\n## Props / API\n| Prop | Type | Default | Description |\n|------|------|---------|-------------|\n## Variants\n## Accessibility Requirements (ARIA, keyboard navigation)\n## Usage Examples (code snippets)\n## What NOT to do\n\nComponent description:\n{{description}}',
+    rating: 4,
+    notes: [],
+    metadata: {
+      model: 'claude-sonnet-4-6',
+      createdAt: '2025-11-26T09:00:00.000Z',
+      updatedAt: '2025-11-26T09:00:00.000Z',
+      tokenEstimate: { min: 70, max: 105, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000014000,
+    title: 'Root Cause Analysis (5 Whys)',
+    content: 'You are a reliability engineer facilitating a blameless post-mortem. Apply the 5 Whys technique to the following incident. For each "why", state the cause and the evidence that supports it. After the 5th why, state:\n- Root cause\n- Recommended corrective action\n- Recommended preventive action\n\nIncident summary:\n{{incident}}',
+    rating: 3,
+    notes: [
+      { id: 1700000014100, text: 'Useful starting point but always review with the actual engineers — the model sometimes makes plausible-sounding but wrong causal chains.', createdAt: 1700000014100 }
+    ],
+    metadata: {
+      model: 'claude-sonnet-4-6',
+      createdAt: '2025-11-27T10:00:00.000Z',
+      updatedAt: '2025-11-27T10:00:00.000Z',
+      tokenEstimate: { min: 72, max: 106, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000015000,
+    title: 'Interview Question Generator',
+    content: 'You are a senior engineering interviewer. Generate {{n}} interview questions for the role and level below. For each question:\n- State the question\n- List 2-3 signals you are looking for in a strong answer\n- Classify it: Behavioural | Technical | System Design\n\nRole: {{role}}\nLevel: {{level}} (e.g., L4 / Senior / Staff)\nFocus areas: {{focus_areas}}',
+    rating: 4,
+    notes: [],
+    metadata: {
+      model: 'gpt-4o',
+      createdAt: '2025-11-28T13:00:00.000Z',
+      updatedAt: '2025-11-28T13:00:00.000Z',
+      tokenEstimate: { min: 63, max: 94, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000016000,
+    title: 'API Documentation from Code',
+    content: 'You are a technical writer. Generate OpenAPI-style documentation for the following API endpoint. Include:\n- Summary and description\n- Request: method, path, path params, query params, request body (with JSON Schema)\n- Response: status codes, response body schema, example responses\n- Error responses\n\nFormat the output as a YAML OpenAPI 3.0 snippet.\n\nEndpoint code:\n```\n{{code}}\n```',
+    rating: 4,
+    notes: [
+      { id: 1700000016100, text: 'Best results when you include the full route handler + any middleware. Partial context leads to incomplete schemas.', createdAt: 1700000016100 }
+    ],
+    metadata: {
+      model: 'gpt-4o',
+      createdAt: '2025-11-29T09:00:00.000Z',
+      updatedAt: '2025-11-29T09:00:00.000Z',
+      tokenEstimate: { min: 78, max: 114, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000017000,
+    title: 'Competitive Analysis Matrix',
+    content: 'You are a strategic analyst. Build a competitive analysis matrix comparing {{our_product}} against the competitors listed. For each competitor, evaluate:\n\n| Dimension | Us | {{competitor_1}} | {{competitor_2}} | {{competitor_3}} |\n|-----------|----|----|----|----|  \n\nDimensions to cover: Pricing, Core Features, Target Segment, Strengths, Weaknesses, Differentiator.\n\nAfter the matrix, write a 3-sentence strategic insight paragraph.\n\nContext: {{context}}',
+    rating: 2,
+    notes: [
+      { id: 1700000017100, text: 'Output quality depends heavily on how current the model knowledge is. Always verify competitor data manually before sharing.', createdAt: 1700000017100 }
+    ],
+    metadata: {
+      model: 'gpt-4o',
+      createdAt: '2025-11-30T11:00:00.000Z',
+      updatedAt: '2025-11-30T11:00:00.000Z',
+      tokenEstimate: { min: 90, max: 131, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000018000,
+    title: 'Regex Pattern Generator',
+    content: 'You are a regex expert. Generate a regex pattern for the requirement below. Provide:\n1. The pattern itself\n2. Explanation of each part of the pattern\n3. Three example strings that MATCH\n4. Three example strings that DO NOT match\n5. Known edge cases or limitations\n\nTarget language/engine: {{language}} (affects syntax for lookaheads, flags, etc.)\n\nRequirement:\n{{requirement}}',
+    rating: 5,
+    notes: [],
+    metadata: {
+      model: 'gpt-4o-mini',
+      createdAt: '2025-12-01T10:00:00.000Z',
+      updatedAt: '2025-12-01T10:00:00.000Z',
+      tokenEstimate: { min: 74, max: 108, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000019000,
+    title: 'Meeting Notes → Action Items',
+    content: 'You are an executive assistant. Extract all action items from the meeting notes below. For each action item output:\n- Owner (person responsible)\n- Task (what needs to be done)\n- Due date (if mentioned, otherwise "TBD")\n- Priority: High / Medium / Low (infer from context)\n\nFormat as a markdown table. After the table, write a one-paragraph "Key Decisions" summary.\n\nMeeting notes:\n{{notes}}',
+    rating: 5,
+    notes: [
+      { id: 1700000019100, text: 'Works best on verbatim transcript. For rough notes, prepend "Clean up any typos and informal language before extracting."', createdAt: 1700000019100 }
+    ],
+    metadata: {
+      model: 'gpt-4o-mini',
+      createdAt: '2025-12-02T08:00:00.000Z',
+      updatedAt: '2025-12-02T08:00:00.000Z',
+      tokenEstimate: { min: 82, max: 119, confidence: 'high' }
+    }
+  },
+  {
+    id: 1700000020000,
+    title: 'System Design Interview Coach',
+    content: 'You are a staff engineer coaching a candidate through a system design interview. I will describe a system to design and you will:\n1. Ask 3 clarifying questions before we start (requirements, scale, constraints)\n2. Wait for my answers\n3. Guide me through the design iteratively — prompt me to think about components, data flow, trade-offs, and failure modes\n4. After each component I propose, give brief feedback: what is good, what is missing\n5. At the end, give an overall score (1-5) and 2-3 specific improvement areas\n\nSystem to design: {{system}}',
+    rating: 5,
+    notes: [
+      { id: 1700000020100, text: 'Outstanding for mock interview prep. Claude maintains the coach persona much more consistently than GPT-4o for long sessions.', createdAt: 1700000020100 },
+      { id: 1700000020200, text: 'Add "Do not give the full solution upfront" to prevent the model from just designing everything itself.', createdAt: 1700000020200 }
+    ],
+    metadata: {
+      model: 'claude-opus-4-6',
+      createdAt: '2025-12-03T09:00:00.000Z',
+      updatedAt: '2025-12-03T09:00:00.000Z',
+      tokenEstimate: { min: 111, max: 158, confidence: 'high' }
+    }
+  }
+];

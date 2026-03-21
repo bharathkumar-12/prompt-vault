@@ -3,17 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Prompt Library</title>
+    <title>Prompt Vault</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="container">
       <header>
-        <h1>Prompt Library</h1>
-        <p>Save and manage your prompts</p>
+        <div class="header-brand">
+          <div class="brand-icon" aria-hidden="true">⚡</div>
+          <div class="brand-text">
+            <h1>Prompt Vault</h1>
+            <p>Save and manage your AI prompts</p>
+          </div>
+        </div>
         <div class="header-controls">
-          <button id="exportBtn" class="btn">Export Prompts</button>
-          <button id="importBtn" class="btn">Import Prompts</button>
+          <button onclick="loadDemoData()" class="btn btn-ghost">
+            <span aria-hidden="true">✦</span> Demo
+          </button>
+          <button id="exportBtn" class="btn btn-ghost">
+            <span aria-hidden="true">↑</span> Export
+          </button>
+          <button id="importBtn" class="btn btn-ghost">
+            <span aria-hidden="true">↓</span> Import
+          </button>
           <input
             id="importFile"
             type="file"
@@ -24,15 +36,15 @@
       </header>
 
       <main>
-        <section class="form-section">
-          <h2>Create New Prompt</h2>
+        <aside class="form-section">
+          <h2>New Prompt</h2>
           <form id="promptForm">
             <div class="form-group">
-              <label for="promptTitle">Prompt Title</label>
+              <label for="promptTitle">Title</label>
               <input
                 type="text"
                 id="promptTitle"
-                placeholder="Enter prompt title..."
+                placeholder="Enter a descriptive title..."
                 required
               />
             </div>
@@ -40,31 +52,54 @@
               <label for="promptContent">Prompt Content</label>
               <textarea
                 id="promptContent"
-                placeholder="Enter prompt content..."
-                rows="5"
+                placeholder="Write your prompt here..."
+                rows="7"
                 required
               ></textarea>
             </div>
             <div class="form-group">
-              <label for="modelName">Model Name</label>
+              <label for="modelName">Target Model</label>
               <input
                 type="text"
                 id="modelName"
                 maxlength="100"
-                placeholder="e.g. gpt-4o-mini or gpt-4"
+                placeholder="e.g. gpt-4o, claude-sonnet-4-6"
                 required
               />
             </div>
-            <button type="submit" class="btn btn-primary">Save Prompt</button>
+            <button type="submit" class="btn btn-primary">
+              <span aria-hidden="true">+</span> Save Prompt
+            </button>
           </form>
-        </section>
+        </aside>
 
         <section class="prompts-section">
-          <h2>Saved Prompts</h2>
+          <div class="prompts-section-header">
+            <h2>Saved Prompts <span id="promptCount" class="prompt-count-badge"></span></h2>
+            <div class="prompts-toolbar">
+              <div class="search-wrap">
+                <span class="search-icon" aria-hidden="true">🔍</span>
+                <input
+                  type="search"
+                  id="searchInput"
+                  placeholder="Search prompts..."
+                  aria-label="Search prompts"
+                />
+              </div>
+              <select id="sortSelect" aria-label="Sort prompts">
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+                <option value="rating">Highest rated</option>
+                <option value="title">A → Z</option>
+              </select>
+            </div>
+          </div>
           <div id="promptsContainer" class="prompts-grid">
-            <p class="empty-state">
-              No prompts saved yet. Create your first prompt above!
-            </p>
+            <div class="empty-state">
+              <div class="empty-icon" aria-hidden="true">📭</div>
+              <p class="empty-title">No prompts yet</p>
+              <p class="empty-sub">Create your first prompt using the form on the left.</p>
+            </div>
           </div>
         </section>
       </main>
@@ -73,15 +108,18 @@
     <!-- Import conflict modal -->
     <div id="conflictModal" class="modal" aria-hidden="true">
       <div class="modal-dialog">
-        <h3>Import Conflict</h3>
+        <div class="modal-header">
+          <span class="modal-icon" aria-hidden="true">⚠️</span>
+          <h3>Import Conflict</h3>
+        </div>
         <p id="conflictMessage">
-          There are duplicate prompt IDs. Choose how to resolve conflicts.
+          Duplicate prompt IDs found. Choose how to resolve conflicts.
         </p>
         <div class="modal-actions">
-          <button id="conflictMerge" class="btn">Merge (update fields)</button>
-          <button id="conflictOverwrite" class="btn">Overwrite</button>
-          <button id="conflictCreateNew" class="btn">Create New IDs</button>
-          <button id="conflictCancel" class="btn btn-delete">Cancel</button>
+          <button id="conflictMerge" class="btn btn-ghost">Merge</button>
+          <button id="conflictOverwrite" class="btn btn-ghost">Overwrite</button>
+          <button id="conflictCreateNew" class="btn btn-ghost">Create New IDs</button>
+          <button id="conflictCancel" class="btn btn-danger">Cancel</button>
         </div>
       </div>
     </div>
