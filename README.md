@@ -105,3 +105,9 @@ prompt-vault/
 ## License
 
 MIT
+
+---
+
+## Maintenance
+
+Last maintenance update: <!--LAST_UPDATED-->2026-05-19<!--/LAST_UPDATED-->
