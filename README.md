@@ -17,7 +17,7 @@ A lightweight, browser-based prompt management tool for AI engineers. Save, orga
 - **Import / Export** — Back up and restore your prompt library as JSON, with conflict resolution (merge, overwrite, or create new IDs)
 - **Responsive** — Works on desktop and mobile
 
-## Getting Started
+## Get started
 
 No install or build step needed. Just open `index.html` in your browser.
 
