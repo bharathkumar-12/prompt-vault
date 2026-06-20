@@ -110,6 +110,6 @@ MIT
 
 ## Maintenance
 
-Last maintenance update: <!--LAST_UPDATED-->2026-06-12<!--/LAST_UPDATED-->
+Last maintenance update: <!--LAST_UPDATED-->2026-06-20<!--/LAST_UPDATED-->
 <!-- changelog:2026-06-02 -->
 <!-- Maintenance pass: 2026-06-02 -->
