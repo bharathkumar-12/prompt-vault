@@ -3,7 +3,6 @@
 
 A lightweight, browser-based prompt management tool for AI engineers. Save, organize, rate, and annotate your AI prompts — no backend required.
 
-
 <img width="1600" height="1280" alt="screen" src="https://github.com/user-attachments/assets/183abc14-58e4-40f8-b5d5-47cf0ba1291c" />
 
 ## Features
